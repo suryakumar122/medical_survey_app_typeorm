@@ -3,6 +3,30 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { compare } from "bcryptjs";
 import { storage } from "../server/storage";
 
+// Mock users for development and testing
+const MOCK_USERS = {
+  doctor: {
+    id: "1",
+    email: "doctor@example.com",
+    name: "Dr. John Smith",
+    password: "$2a$10$rJ95C0iL/4Zx1xH5Qv.JT.IZZ./KLhMvETHZRpvP6JCDiYVHJdkNu", // Password: doctorpass
+    role: "doctor",
+    status: "active",
+    profilePicture: null,
+    specialty: "Cardiology",
+    hospital: "City General Hospital"
+  },
+  client: {
+    id: "2",
+    email: "client@example.com",
+    name: "Acme Pharmaceuticals",
+    password: "$2a$10$KxwB2vZ.I0hXFT7fMXDxKeUOTa8r/1q1NfnjyEbfgJ7C0xWsPV04.", // Password: clientpass
+    role: "client",
+    status: "active",
+    profilePicture: null
+  }
+};
+
 export const authOptions: NextAuthOptions = {
   session: {
     strategy: "jwt",
@@ -35,30 +59,59 @@ export const authOptions: NextAuthOptions = {
         if (!credentials?.email || !credentials?.password) {
           throw new Error("Invalid credentials");
         }
-
-        // Use the Drizzle storage implementation
-        const user = await storage.getUserByUsername(credentials.email);
-
-        if (!user || !user.password) {
-          throw new Error("User not found");
+        
+        // For development, check if the email matches one of our mock users first
+        let mockUser = null;
+        if (credentials.email === MOCK_USERS.doctor.email) {
+          mockUser = MOCK_USERS.doctor;
+        } else if (credentials.email === MOCK_USERS.client.email) {
+          mockUser = MOCK_USERS.client;
         }
-
-        if (user.status !== "active") {
-          throw new Error("User account is not active");
+        
+        if (mockUser) {
+          // Use mock user for testing
+          const isValid = await compare(credentials.password, mockUser.password);
+          
+          if (!isValid) {
+            throw new Error("Invalid password");
+          }
+          
+          return {
+            id: mockUser.id,
+            email: mockUser.email,
+            name: mockUser.name,
+            role: mockUser.role,
+          };
         }
-
-        const isValid = await compare(credentials.password, user.password);
-
-        if (!isValid) {
-          throw new Error("Invalid password");
+        
+        // If not a mock user, try using the Drizzle storage implementation
+        try {
+          const user = await storage.getUserByUsername(credentials.email);
+          
+          if (!user || !user.password) {
+            throw new Error("User not found");
+          }
+          
+          if (user.status !== "active") {
+            throw new Error("User account is not active");
+          }
+          
+          const isValid = await compare(credentials.password, user.password);
+          
+          if (!isValid) {
+            throw new Error("Invalid password");
+          }
+          
+          return {
+            id: user.id.toString(),
+            email: user.email,
+            name: user.name,
+            role: user.role,
+          };
+        } catch (error) {
+          console.error("Database authentication error:", error);
+          throw new Error("Authentication failed");
         }
-
-        return {
-          id: user.id.toString(),
-          email: user.email,
-          name: user.name,
-          role: user.role,
-        };
       },
     }),
   ],
