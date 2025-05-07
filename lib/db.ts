@@ -19,7 +19,7 @@ let globalDataSource: DataSource | null = null;
 console.log("Database configuration:");
 console.log(`Host: ${process.env.PGHOST || "localhost"}`);
 console.log(`Port: ${process.env.PGPORT || "5432"}`);
-console.log(`Database: ${process.env.PGDATABASE || "medical_survey_db"}`);
+console.log(`Database: ${process.env.PGDATABASE || "postgres"}`);
 console.log(`User: ${process.env.PGUSER || "postgres"}`);
 console.log(`Environment: ${process.env.NODE_ENV}`);
 
@@ -30,9 +30,9 @@ const AppDataSource = new DataSource({
   port: parseInt(process.env.PGPORT || "5432"),
   username: process.env.PGUSER || "postgres",
   password: process.env.PGPASSWORD || "postgres",
-  database: process.env.PGDATABASE || "medical_survey_db",
+  database: process.env.PGDATABASE || "postgres",
   synchronize: process.env.NODE_ENV !== "production",
-  logging: true, // Always log database queries during this debugging phase
+  logging: true,
   entities: [
     User,
     Client,
@@ -88,6 +88,7 @@ export const getRepository = async <T>(entity: any) => {
   try {
     console.log(`Getting repository for entity: ${entity.name || "Unknown entity"}`);
     const dataSource = await getDataSource();
+    // console.log("globalDataSource initialized:", globalDataSource);
     const repository = dataSource.getRepository<T>(entity);
     console.log(`Successfully got repository for: ${entity.name || "Unknown entity"}`);
     return repository;

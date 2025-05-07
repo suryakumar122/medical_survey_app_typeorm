@@ -1,4 +1,5 @@
 /** @type {import('next').NextConfig} */
+const path = require('path');
 const nextConfig = {
   reactStrictMode: true,
   images: {
@@ -42,14 +43,14 @@ const nextConfig = {
   },
 }
 
-// Initialize database connection
-if (process.env.NODE_ENV !== 'production') {
-  console.log('Importing database initialization in development mode');
-  try {
-    require('/lib/dbInit');
-  } catch (error) {
-    console.error('Failed to load database initialization:', error);
-  }
-}
+// // Initialize database connection
+// if (process.env.NODE_ENV !== 'production') {
+//   console.log('Importing database initialization in development mode');
+//  try {
+//   require(path.resolve('./lib/dbInit.ts'));
+// } catch (error) {
+//   console.error('Failed to load database initialization:', error);
+// }
+// }
 
 module.exports = nextConfig
