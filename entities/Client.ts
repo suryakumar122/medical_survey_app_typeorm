@@ -2,7 +2,6 @@ import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateCol
 import { User } from "./User";
 import { Representative } from "./Representative";
 import { Survey } from "./Survey";
-import { DoctorClientMapping } from "./DoctorClientMapping";
 
 @Entity("clients")
 export class Client {
@@ -33,16 +32,17 @@ export class Client {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @OneToOne(() => User, (user) => user.client)
+  @OneToOne(() => User)
   @JoinColumn({ name: "userId" })
   user: User;
 
-  @OneToMany(() => Representative, (rep) => rep.client)
+  @OneToMany(() => Representative, representative => representative.client)
   representatives: Representative[];
 
-  @OneToMany(() => Survey, (survey) => survey.client)
+  @OneToMany(() => Survey, survey => survey.client)
   surveys: Survey[];
 
-  @OneToMany(() => DoctorClientMapping, (mapping) => mapping.client)
-  doctorMappings: DoctorClientMapping[];
+  // Use string reference to avoid circular dependency
+  @OneToMany("DoctorClientMapping", "client")
+  doctorMappings: any[];
 }

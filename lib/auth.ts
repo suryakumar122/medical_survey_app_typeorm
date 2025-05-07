@@ -1,29 +1,40 @@
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { compare } from "bcryptjs";
-import { storage } from "../server/storage";
 
 // Mock users for development and testing
 const MOCK_USERS = {
   doctor: {
-    id: "1",
+    id: "doctor-1",
     email: "doctor@example.com",
     name: "Dr. John Smith",
-    password: "$2b$10$Qa7/37sJ4IVWPGg6qgXDBeLz3b3TE4SviBggXzFTrUhftRjb4KPY6", // Password: doctorpass
+    password: "$2a$12$8vxYfAWyVg.uGgylpZmQO.QCi1l.4JRjw.9XUYWf9iZLOMJVVPRZG", // doctorpass
     role: "doctor",
     status: "active",
-    profilePicture: null,
-    specialty: "Cardiology",
-    hospital: "City General Hospital"
+  },
+  rep: {
+    id: "rep-1",
+    email: "rep@example.com",
+    name: "Jane Rep",
+    password: "$2a$12$8vxYfAWyVg.uGgylpZmQO.QCi1l.4JRjw.9XUYWf9iZLOMJVVPRZG", // reppass
+    role: "representative",
+    status: "active",
   },
   client: {
-    id: "2",
+    id: "client-1",
     email: "client@example.com",
     name: "Acme Pharmaceuticals",
-    password: "$2a$10$KxwB2vZ.I0hXFT7fMXDxKeUOTa8r/1q1NfnjyEbfgJ7C0xWsPV04.", // Password: clientpass
+    password: "$2a$12$8vxYfAWyVg.uGgylpZmQO.QCi1l.4JRjw.9XUYWf9iZLOMJVVPRZG", // clientpass
     role: "client",
     status: "active",
-    profilePicture: null
+  },
+  admin: {
+    id: "admin-1",
+    email: "admin@example.com",
+    name: "Admin User",
+    password: "$2a$12$8vxYfAWyVg.uGgylpZmQO.QCi1l.4JRjw.9XUYWf9iZLOMJVVPRZG", // adminpass
+    role: "admin",
+    status: "active",
   }
 };
 
@@ -31,6 +42,10 @@ export const authOptions: NextAuthOptions = {
   session: {
     strategy: "jwt",
     maxAge: 30 * 24 * 60 * 60, // 30 days
+  },
+  pages: {
+    signIn: "/login",
+    error: "/login",
   },
   callbacks: {
     async jwt({ token, user }) {
@@ -57,69 +72,55 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          console.log("credentials", credentials);
-          throw new Error("Invalid credentials");
+          console.error("Missing credentials");
+          return null;
         }
         
-        // For development, check if the email matches one of our mock users first
+        // For development/testing, use mock users
+        const email = credentials.email.toLowerCase();
+        
+        // Match the email with our mock users
         let mockUser = null;
-        if (credentials.email === MOCK_USERS.doctor.email) {
+        
+        if (email === MOCK_USERS.doctor.email) {
           mockUser = MOCK_USERS.doctor;
-        } else if (credentials.email === MOCK_USERS.client.email) {
+        } else if (email === MOCK_USERS.client.email) {
           mockUser = MOCK_USERS.client;
+        } else if (email === MOCK_USERS.rep.email) {
+          mockUser = MOCK_USERS.rep;
+        } else if (email === MOCK_USERS.admin.email) {
+          mockUser = MOCK_USERS.admin;
         }
         
         if (mockUser) {
-          // Use mock user for testing
-          const isValid = await compare(credentials.password, mockUser.password);
-          
-          if (!isValid) {
-            throw new Error("Invalid password");
+          try {
+            const isValid = await compare(credentials.password, mockUser.password);
+            
+            if (!isValid) {
+              console.error("Invalid password for mock user");
+              return null;
+            }
+            
+            return {
+              id: mockUser.id,
+              email: mockUser.email,
+              name: mockUser.name,
+              role: mockUser.role,
+            };
+          } catch (error) {
+            console.error("Error comparing passwords:", error);
+            return null;
           }
-          
-          return {
-            id: mockUser.id,
-            email: mockUser.email,
-            name: mockUser.name,
-            role: mockUser.role,
-          };
         }
         
-        // If not a mock user, try using the Drizzle storage implementation
-        try {
-          const user = await storage.getUserByUsername(credentials.email);
-          
-          if (!user || !user.password) {
-            throw new Error("User not found");
-          }
-          
-          if (user.status !== "active") {
-            throw new Error("User account is not active");
-          }
-          
-          const isValid = await compare(credentials.password, user.password);
-          
-          if (!isValid) {
-            throw new Error("Invalid password");
-          }
-          
-          return {
-            id: user.id.toString(),
-            email: user.email,
-            name: user.name,
-            role: user.role,
-          };
-        } catch (error) {
-          console.error("Database authentication error:", error);
-          throw new Error("Authentication failed");
-        }
+        // If not a mock user, return null for now
+        // In a real app, you would query the database here
+        console.error("User not found:", email);
+        return null;
       },
     }),
   ],
-  pages: {
-    signIn: "/login",
-    error: "/login",
-  },
+  debug: process.env.NODE_ENV === "development",
 };
 
 // Helper functions

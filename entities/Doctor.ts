@@ -1,9 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToOne, JoinColumn, OneToMany } from "typeorm";
 import { User } from "./User";
-import { DoctorClientMapping } from "./DoctorClientMapping";
-import { DoctorRepMapping } from "./DoctorRepMapping";
-import { DoctorSurveyResponse } from "./DoctorSurveyResponse";
-import { Redemption } from "./Redemption";
 
 @Entity("doctors")
 export class Doctor {
@@ -34,19 +30,20 @@ export class Doctor {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @OneToOne(() => User, (user) => user.doctor)
+  @OneToOne(() => User)
   @JoinColumn({ name: "userId" })
   user: User;
 
-  @OneToMany(() => DoctorClientMapping, (mapping) => mapping.doctor)
-  clientMappings: DoctorClientMapping[];
+  // We'll define relationships using strings instead of direct imports to avoid circular dependencies
+  @OneToMany("DoctorClientMapping", "doctor")
+  clientMappings: any[];
 
-  @OneToMany(() => DoctorRepMapping, (mapping) => mapping.doctor)
-  repMappings: DoctorRepMapping[];
+  @OneToMany("DoctorRepMapping", "doctor")
+  repMappings: any[];
 
-  @OneToMany(() => DoctorSurveyResponse, (response) => response.doctor)
-  surveyResponses: DoctorSurveyResponse[];
+  @OneToMany("DoctorSurveyResponse", "doctor")
+  surveyResponses: any[];
 
-  @OneToMany(() => Redemption, (redemption) => redemption.doctor)
-  redemptions: Redemption[];
+  @OneToMany("Redemption", "doctor")
+  redemptions: any[];
 }

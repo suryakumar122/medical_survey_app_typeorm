@@ -1,5 +1,4 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn } from "typeorm";
-import { Doctor } from "./Doctor";
 import { Representative } from "./Representative";
 
 @Entity("doctor_rep_mappings")
@@ -16,11 +15,12 @@ export class DoctorRepMapping {
   @CreateDateColumn()
   createdAt: Date;
 
-  @ManyToOne(() => Doctor, (doctor) => doctor.repMappings)
+  // Use string reference to avoid circular dependency
+  @ManyToOne("Doctor", "repMappings")
   @JoinColumn({ name: "doctorId" })
-  doctor: Doctor;
+  doctor: any;
 
-  @ManyToOne(() => Representative, (rep) => rep.doctorMappings)
+  @ManyToOne(() => Representative, rep => rep.doctorMappings)
   @JoinColumn({ name: "repId" })
   representative: Representative;
 }
