@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import DashboardLayout from "@components/layout/DashboardLayout";
 import Card from "@components/ui/Card";
 import Link from "next/link";
-import { ClipboardDocumentListIcon, UserCircleIcon, CreditCardIcon } from "@heroicons/react/24/outline";
+import { ClipboardDocumentListIcon, UserCircleIcon, CreditCardIcon , CheckCircleIcon } from "@heroicons/react/24/outline";
 import { DoctorService } from "@services/DoctorService";
 import { SurveyService } from "@services/SurveyService";
 import { formatDate } from "@lib/utils";
