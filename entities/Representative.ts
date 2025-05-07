@@ -1,6 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToOne, JoinColumn, ManyToOne } from "typeorm";
+// entities/Representative.ts
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToOne, JoinColumn, ManyToOne,OneToMany } from "typeorm";
 import { User } from "./User";
-import { Client } from "./Client";
 
 @Entity("representatives")
 export class Representative {
@@ -29,11 +29,10 @@ export class Representative {
   @JoinColumn({ name: "userId" })
   user: User;
 
-  @ManyToOne(() => Client, client => client.representatives)
+  @ManyToOne("Client", (client: any) => client.representatives)
   @JoinColumn({ name: "clientId" })
-  client: Client;
+  client: any;
 
-  // Use string reference to avoid circular dependency
-  @OneToMany("DoctorRepMapping", "representative")
+  @OneToMany("DoctorRepMapping", (mapping: any) => mapping.representative)
   doctorMappings: any[];
 }

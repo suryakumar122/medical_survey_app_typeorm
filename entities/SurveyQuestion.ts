@@ -1,6 +1,5 @@
+// entities/SurveyQuestion.ts
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany, JoinColumn } from "typeorm";
-import { Survey } from "./Survey";
-import { QuestionResponse } from "./QuestionResponse";
 
 export type QuestionType = "text" | "likert" | "multipleChoice" | "checkbox" | "ranking" | "matrix";
 
@@ -39,10 +38,10 @@ export class SurveyQuestion {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(() => Survey, (survey) => survey.questions, { onDelete: "CASCADE" })
+  @ManyToOne("Survey", (survey: any) => survey.questions, { onDelete: "CASCADE" })
   @JoinColumn({ name: "surveyId" })
-  survey: Survey;
+  survey: any;
 
-  @OneToMany(() => QuestionResponse, (response) => response.question)
-  responses: QuestionResponse[];
+  @OneToMany("QuestionResponse", (response: any) => response.question)
+  responses: any[];
 }

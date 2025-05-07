@@ -40,11 +40,16 @@ const nextConfig = {
     
     return config;
   },
-  // // Add experimental settings for App Router
-  // experimental: {
-  //   appDir: true,
-  //   esmExternals: 'loose', // This helps with ESM/CJS compatibility issues
-  // },
+}
+
+// Initialize database connection
+if (process.env.NODE_ENV !== 'production') {
+  console.log('Importing database initialization in development mode');
+  try {
+    require('/lib/dbInit');
+  } catch (error) {
+    console.error('Failed to load database initialization:', error);
+  }
 }
 
 module.exports = nextConfig

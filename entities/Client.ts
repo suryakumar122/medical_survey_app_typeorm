@@ -1,7 +1,6 @@
+// entities/Client.ts
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToOne, JoinColumn, OneToMany } from "typeorm";
 import { User } from "./User";
-import { Representative } from "./Representative";
-import { Survey } from "./Survey";
 
 @Entity("clients")
 export class Client {
@@ -36,13 +35,12 @@ export class Client {
   @JoinColumn({ name: "userId" })
   user: User;
 
-  @OneToMany(() => Representative, representative => representative.client)
-  representatives: Representative[];
+  @OneToMany("Representative", (representative: any) => representative.client)
+  representatives: any[];
 
-  @OneToMany(() => Survey, survey => survey.client)
-  surveys: Survey[];
+  @OneToMany("Survey", (survey: any) => survey.client)
+  surveys: any[];
 
-  // Use string reference to avoid circular dependency
-  @OneToMany("DoctorClientMapping", "client")
+  @OneToMany("DoctorClientMapping", (mapping: any) => mapping.client)
   doctorMappings: any[];
 }

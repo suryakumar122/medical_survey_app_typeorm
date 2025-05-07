@@ -1,5 +1,5 @@
+// entities/Redemption.ts
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, JoinColumn } from "typeorm";
-import { Doctor } from "./Doctor";
 
 export type RedemptionStatus = "pending" | "processing" | "completed" | "rejected";
 export type RedemptionType = "upi" | "amazon";
@@ -40,7 +40,7 @@ export class Redemption {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(() => Doctor, (doctor) => doctor.redemptions)
+  @ManyToOne("Doctor", (doctor: any) => doctor.redemptions)
   @JoinColumn({ name: "doctorId" })
-  doctor: Doctor;
+  doctor: any;
 }

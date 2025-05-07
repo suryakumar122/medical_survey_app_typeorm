@@ -1,7 +1,5 @@
+// entities/DoctorSurveyResponse.ts
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, ManyToOne, OneToMany, JoinColumn } from "typeorm";
-import { Doctor } from "./Doctor";
-import { Survey } from "./Survey";
-import { QuestionResponse } from "./QuestionResponse";
 
 @Entity("doctor_survey_responses")
 export class DoctorSurveyResponse {
@@ -32,14 +30,14 @@ export class DoctorSurveyResponse {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(() => Doctor, (doctor) => doctor.surveyResponses)
+  @ManyToOne("Doctor", (doctor: any) => doctor.surveyResponses)
   @JoinColumn({ name: "doctorId" })
-  doctor: Doctor;
+  doctor: any;
 
-  @ManyToOne(() => Survey, (survey) => survey.responses)
+  @ManyToOne("Survey", (survey: any) => survey.responses)
   @JoinColumn({ name: "surveyId" })
-  survey: Survey;
+  survey: any;
 
-  @OneToMany(() => QuestionResponse, (response) => response.doctorSurveyResponse, { cascade: true })
-  questionResponses: QuestionResponse[];
+  @OneToMany("QuestionResponse", (response: any) => response.doctorSurveyResponse, { cascade: true })
+  questionResponses: any[];
 }

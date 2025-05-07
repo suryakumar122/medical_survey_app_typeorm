@@ -1,3 +1,4 @@
+// entities/Doctor.ts
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToOne, JoinColumn, OneToMany } from "typeorm";
 import { User } from "./User";
 
@@ -34,16 +35,15 @@ export class Doctor {
   @JoinColumn({ name: "userId" })
   user: User;
 
-  // We'll define relationships using strings instead of direct imports to avoid circular dependencies
-  @OneToMany("DoctorClientMapping", "doctor")
+  @OneToMany("DoctorClientMapping", (mapping: any) => mapping.doctor)
   clientMappings: any[];
 
-  @OneToMany("DoctorRepMapping", "doctor")
+  @OneToMany("DoctorRepMapping", (mapping: any) => mapping.doctor)
   repMappings: any[];
 
-  @OneToMany("DoctorSurveyResponse", "doctor")
+  @OneToMany("DoctorSurveyResponse", (response: any) => response.doctor)
   surveyResponses: any[];
 
-  @OneToMany("Redemption", "doctor")
+  @OneToMany("Redemption", (redemption: any) => redemption.doctor)
   redemptions: any[];
 }

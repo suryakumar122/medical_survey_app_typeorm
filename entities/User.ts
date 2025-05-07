@@ -1,7 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn, OneToOne } from "typeorm";
-import { Doctor } from "./Doctor";
-import { Representative } from "./Representative";
-import { Client } from "./Client";
+// entities/User.ts
+import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from "typeorm";
 
 export type UserRole = "doctor" | "representative" | "client" | "admin";
 export type UserStatus = "pending" | "active" | "inactive" | "suspended";
@@ -53,13 +51,4 @@ export class User {
 
   @UpdateDateColumn()
   updatedAt: Date;
-
-  @OneToOne(() => Doctor, (doctor) => doctor.user)
-  doctor: Doctor;
-
-  @OneToOne(() => Representative, (rep) => rep.user)
-  representative: Representative;
-
-  @OneToOne(() => Client, (client) => client.user)
-  client: Client;
 }

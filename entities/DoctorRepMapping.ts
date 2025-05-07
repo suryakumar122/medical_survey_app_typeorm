@@ -1,5 +1,5 @@
+// entities/DoctorRepMapping.ts
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, ManyToOne, JoinColumn } from "typeorm";
-import { Representative } from "./Representative";
 
 @Entity("doctor_rep_mappings")
 export class DoctorRepMapping {
@@ -15,12 +15,11 @@ export class DoctorRepMapping {
   @CreateDateColumn()
   createdAt: Date;
 
-  // Use string reference to avoid circular dependency
-  @ManyToOne("Doctor", "repMappings")
+  @ManyToOne("Doctor", (doctor: any) => doctor.repMappings)
   @JoinColumn({ name: "doctorId" })
   doctor: any;
 
-  @ManyToOne(() => Representative, rep => rep.doctorMappings)
+  @ManyToOne("Representative", (rep: any) => rep.doctorMappings)
   @JoinColumn({ name: "repId" })
-  representative: Representative;
+  representative: any;
 }
