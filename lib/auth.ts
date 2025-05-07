@@ -9,7 +9,7 @@ const MOCK_USERS = {
     id: "1",
     email: "doctor@example.com",
     name: "Dr. John Smith",
-    password: "$2a$10$rJ95C0iL/4Zx1xH5Qv.JT.IZZ./KLhMvETHZRpvP6JCDiYVHJdkNu", // Password: doctorpass
+    password: "$2b$10$Qa7/37sJ4IVWPGg6qgXDBeLz3b3TE4SviBggXzFTrUhftRjb4KPY6", // Password: doctorpass
     role: "doctor",
     status: "active",
     profilePicture: null,
@@ -57,6 +57,7 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
+          console.log("credentials", credentials);
           throw new Error("Invalid credentials");
         }
         
